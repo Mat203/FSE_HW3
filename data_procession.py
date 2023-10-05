@@ -49,7 +49,21 @@ def fetch_and_update_data():
         json.dump(all_data, f)
 
 def get_users_online(date):
-    return
+    with open('all_data.json', 'r') as f:
+        all_data = json.load(f)
+
+    users_online = 0
+
+    for user in all_data:
+        for period in user['onlinePeriods']:
+            start = datetime.fromisoformat(period[0])
+            end = datetime.fromisoformat(period[1]) if period[1] else datetime.now()
+
+            if start <= date <= end:
+                users_online += 1
+                break
+
+    return users_online
 
 def get_user_data(date, userId):
     #this will be feature 2
