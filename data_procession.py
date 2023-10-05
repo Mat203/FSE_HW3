@@ -93,8 +93,23 @@ def get_user_data(date, userId):
     return {'wasUserOnline': wasUserOnline, 'nearestOnlineTime': nearestOnlineTime}
 
 def predict_users(date):
-    #this will be feature 3
-    return
+    with open('all_data.json', 'r') as f:
+        all_data = json.load(f)
+
+    online_counts = []
+
+    for user in all_data:
+        for period in user['onlinePeriods']:
+            start = datetime.fromisoformat(period[0])
+            end = datetime.fromisoformat(period[1]) if period[1] else max(datetime.now(), start)
+
+            if start <= date <= end:
+                online_counts.append(1)
+
+    onlineUsers = int(round(sum(online_counts) / len(online_counts))) if online_counts else 0
+
+    return {'onlineUsers': onlineUsers}
+
 
 def predict_user(date, userId):
     #here we will predict user (feature 4)
