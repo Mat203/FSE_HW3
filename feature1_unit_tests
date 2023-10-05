@@ -1,0 +1,22 @@
+import unittest
+import data_procession
+
+class TestGetData(unittest.TestCase):
+    @patch('requests.get')
+    def test_Should_ReturnData_When_GetDataCalledWithValidOffset(self, mock_get):
+        expected_data = {'data': 'test_data'}
+        mock_response.json.return_value = expected_data
+        mock_get.return_value = mock_response
+
+        result = data_procession.get_data(0)
+
+        self.assertEqual(result, expected_data['data'])
+
+class TestUpdateUserData(unittest.TestCase):
+    def test_Should_ReturnUpdatedUser_When_UpdateUserDataCalledWithValidUserAndPreviousState(self):
+        user = {'userId': 'test_user', 'isOnline': True}
+
+        result = data_procession.update_user_data(user)
+
+        self.assertEqual(result['onlinePeriods'], None)
+
