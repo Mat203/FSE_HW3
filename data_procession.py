@@ -111,9 +111,32 @@ def predict_users(date):
     return {'onlineUsers': onlineUsers}
 
 
-def predict_user(date, userId):
-    #here we will predict user (feature 4)
-    return
+def predict_user(date, userId, tolerance):
+    with open('all_data.json', 'r') as f:
+        all_data = json.load(f)
+
+    user_data = next((user for user in all_data if user['userId'] == userId), None)
+
+    if user_data is None:
+        return None
+
+    predict_day_of_week = date.weekday()
+    predict_time = date.time()
+
+    online_counts = []
+
+    for period in user_data['onlinePeriods']:
+        start = datetime.fromisoformat(period[0])
+        end = datetime.fromisoformat(period[1]) if period[1] else datetime.now()
+
+        if start.weekday() == predict_day_of_week and start.time() <= predict_time <= end.time():
+            online_counts.append(1)
+
+    onlineChance = sum(online_counts) / len(user_data['onlinePeriods']) if user_data['onlinePeriods'] else 0
+
+    willBeOnline = onlineChance >= tolerance
+
+    return {'willBeOnline': willBeOnline, 'onlineChance': onlineChance}
 
 if __name__ == "__main__":
     while True:
