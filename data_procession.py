@@ -66,8 +66,31 @@ def get_users_online(date):
     return users_online
 
 def get_user_data(date, userId):
-    #this will be feature 2
-    return
+    with open('all_data.json', 'r') as f:
+        all_data = json.load(f)
+
+    user_data = next((user for user in all_data if user['userId'] == userId), None)
+
+    if user_data is None:
+        return None
+
+    wasUserOnline = None
+    nearestOnlineTime = None
+
+    for period in user_data['onlinePeriods']:
+        start = datetime.fromisoformat(period[0])
+        end = datetime.fromisoformat(period[1]) if period[1] else datetime.now()
+
+        if start <= date <= end:
+            wasUserOnline = True
+            break
+
+    if wasUserOnline is None:
+        wasUserOnline = False
+        nearestPeriod = min(user_data['onlinePeriods'], key=lambda period: abs(date - datetime.fromisoformat(period[0])))
+        nearestOnlineTime = nearestPeriod[0]
+
+    return {'wasUserOnline': wasUserOnline, 'nearestOnlineTime': nearestOnlineTime}
 
 def predict_users(date):
     #this will be feature 3
