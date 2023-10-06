@@ -30,20 +30,26 @@ previous_state = {}
 def fetch_and_update_data():
     offset = 0
     all_data = []
+    counter = 0
 
     while True:
         data = get_data(offset)
 
-        if not data:
+        if not data or counter > 1000: 
             break
 
         for d in data:
             user = { 'userId': d['userId'], 'isOnline': d['isOnline'], 'lastSeenDate': d['lastSeenDate'] }
             updated_user = update_user_data(user, previous_state)
-            all_data.append(updated_user)
+
+            if updated_user['userId'] not in [user['userId'] for user in all_data]:
+                all_data.append(updated_user)
+
             previous_state[updated_user['userId']] = updated_user
 
         offset += len(data)
+        counter += 1
+
 
     with open('all_data.json', 'w') as f:
         json.dump(all_data, f)
